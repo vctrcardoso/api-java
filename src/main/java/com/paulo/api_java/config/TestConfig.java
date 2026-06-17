@@ -9,10 +9,13 @@ import org.springframework.context.annotation.Profile;
 
 import com.paulo.api_java.entities.Category;
 import com.paulo.api_java.entities.Order;
+import com.paulo.api_java.entities.OrderItem;
+import com.paulo.api_java.entities.Payment;
 import com.paulo.api_java.entities.Product;
 import com.paulo.api_java.entities.User;
 import com.paulo.api_java.entities.enums.OrderStatus;
 import com.paulo.api_java.repositories.CategoryRepository;
+import com.paulo.api_java.repositories.OrderItemRepository;
 import com.paulo.api_java.repositories.OrderRepository;
 import com.paulo.api_java.repositories.ProductRepository;
 import com.paulo.api_java.repositories.UserRepository;
@@ -25,12 +28,15 @@ public class TestConfig implements CommandLineRunner {
 	private final OrderRepository orderRepository;
 	private final CategoryRepository categoryRepository;
 	private final ProductRepository productRepository;
+	private final OrderItemRepository orderItemRepository;
 	TestConfig (UserRepository userRepository, OrderRepository orderRepository, CategoryRepository categoryRepository,
-			ProductRepository productRepository) {
+			ProductRepository productRepository, OrderItemRepository orderItemRepository
+			) {
 		this.userRepository = userRepository;
 		this.orderRepository = orderRepository;
 		this.categoryRepository = categoryRepository;
 		this.productRepository = productRepository;
+		this.orderItemRepository = orderItemRepository;
 	}
 	
 	@Override
@@ -64,6 +70,18 @@ public class TestConfig implements CommandLineRunner {
 		p5.getCategories().add(cat2);
 		
 		productRepository.saveAll(Arrays.asList(p1,p2,p3,p4,p5));
+		
+		OrderItem oi1 = new OrderItem(o1, p1, 2, p1.getPrice());
+		OrderItem oi2 = new OrderItem(o1, p3, 1, p3.getPrice());
+		OrderItem oi3 = new OrderItem(o2, p3, 2, p3.getPrice());
+		OrderItem oi4 = new OrderItem(o3, p5, 2, p5.getPrice()); 
+		
+		orderItemRepository.saveAll(Arrays.asList(oi1, oi2, oi3, oi4));
+		
+		Payment pay1 = new Payment(null, Instant.parse("2019-06-20T19:53:07Z"),o1);
+		o1.setPayment(pay1);
+		
+		orderRepository.save(o1);
 
 	}
 }
